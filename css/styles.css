@@ -1,43 +1,330 @@
+:root {
+    --cyan:    #00ffff;
+    --magenta: #ff00ff;
+    --green:   #39ff14;
+    --blue:    #0080ff;
+    --bg:      #05050f;
+    --bg-card: rgba(0, 10, 30, 0.65);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
-    color: #333;
+    background: var(--bg);
+    color: #c8d8e8;
+    font-family: 'Courier New', Courier, monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-header {
-    background: #f4f4f4;
-    padding: 40px 20px;
-    text-align: center;
+/* ── Matrix canvas ── */
+#matrix-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.18;
 }
 
-.projects {
-    padding: 20px;
-    max-width: 800px;
+/* ── Scanlines ── */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.12) 3px,
+        rgba(0,0,0,0.12) 4px
+    );
+    animation: scan 10s linear infinite;
+}
+@keyframes scan {
+    from { background-position: 0 0; }
+    to   { background-position: 0 200px; }
+}
+
+/* ── Layout ── */
+.container {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
     margin: 0 auto;
+    padding: 60px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 44px;
 }
 
-.project-grid {
+/* ── Avatar ── */
+.avatar-section { display: flex; justify-content: center; }
+
+.avatar-wrapper {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 3px solid var(--cyan);
+    box-shadow:
+        0 0 18px var(--cyan),
+        0 0 40px rgba(0,255,255,0.25);
+    transition: box-shadow 0.3s, transform 0.3s;
+    position: relative;
+    z-index: 2;
+}
+.avatar:hover {
+    transform: scale(1.06);
+    box-shadow:
+        0 0 30px var(--cyan),
+        0 0 70px rgba(0,255,255,0.45);
+}
+
+.avatar-ring {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px dashed var(--magenta);
+    box-shadow: 0 0 10px var(--magenta);
+    animation: spin 7s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+.ring-2 {
+    inset: -18px;
+    border-color: rgba(0,128,255,0.5);
+    box-shadow: 0 0 8px var(--blue);
+    animation-duration: 14s;
+    animation-direction: reverse;
+    border-style: dotted;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Identity ── */
+.identity { text-align: center; }
+
+.name {
+    font-size: clamp(2.4rem, 8vw, 3.6rem);
+    font-weight: 900;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-shadow:
+        0 0 8px  var(--cyan),
+        0 0 20px var(--cyan),
+        0 0 50px rgba(0,255,255,0.4);
+    animation: flicker 5s infinite, glitch 8s infinite;
+    position: relative;
+}
+
+@keyframes flicker {
+    0%,94%,100% { opacity: 1; }
+    95%          { opacity: 0.75; }
+    97%          { opacity: 0.5; }
+    98%          { opacity: 1; }
+}
+
+@keyframes glitch {
+    0%,88%,100% {
+        text-shadow: 0 0 8px var(--cyan), 0 0 20px var(--cyan), 0 0 50px rgba(0,255,255,0.4);
+        transform: none;
+    }
+    89% { transform: skewX(-4deg); text-shadow: -3px 0 var(--magenta), 3px 0 var(--green); }
+    90% { transform: skewX(3deg);  text-shadow:  3px 0 var(--magenta),-3px 0 var(--green); }
+    91% { transform: none; text-shadow: 0 0 8px var(--cyan), 0 0 20px var(--cyan); }
+}
+
+.subtitle {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    letter-spacing: 0.15em;
+    color: var(--blue);
+    text-shadow: 0 0 8px var(--blue);
+}
+
+/* ── Motto ── */
+.motto-section { width: 100%; max-width: 580px; }
+
+.motto-box {
+    position: relative;
+    padding: 22px 32px;
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,0,255,0.35);
+    box-shadow:
+        0 0 18px rgba(255,0,255,0.12),
+        inset 0 0 18px rgba(255,0,255,0.04);
+}
+
+/* corner accents */
+.corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: var(--green);
+    border-style: solid;
+    box-shadow: 0 0 6px var(--green);
+}
+.corner.tl { top:-2px;    left:-2px;  border-width: 2px 0 0 2px; }
+.corner.tr { top:-2px;    right:-2px; border-width: 2px 2px 0 0; }
+.corner.bl { bottom:-2px; left:-2px;  border-width: 0 0 2px 2px; }
+.corner.br { bottom:-2px; right:-2px; border-width: 0 2px 2px 0; }
+
+.motto-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,0,255,0.5);
+    margin-bottom: 10px;
+}
+
+.motto-text {
+    font-size: clamp(0.9rem, 3vw, 1.05rem);
+    color: #fff;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    text-shadow: 0 0 6px rgba(255,255,255,0.4);
+}
+
+.bracket {
+    color: var(--green);
+    text-shadow: 0 0 8px var(--green);
+    font-size: 1.1em;
+}
+
+.cursor {
+    color: var(--cyan);
+    text-shadow: 0 0 8px var(--cyan);
+    animation: blink 0.75s step-end infinite;
+    font-size: 0.85em;
+}
+@keyframes blink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0; }
+}
+
+/* ── Cards ── */
+.cards-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    width: 100%;
+    max-width: 680px;
 }
 
-.project-card {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-footer {
-    text-align: center;
-    padding: 20px;
-    background: #333;
-    color: white;
-}
-
-footer a {
-    color: #ffd700;
+.card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
     text-decoration: none;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+}
+
+/* GitHub — neon green */
+.card-github {
+    border: 1px solid rgba(57,255,20,0.35);
+    color: var(--green);
+    box-shadow: 0 0 12px rgba(57,255,20,0.08);
+}
+.card-github:hover {
+    transform: translateY(-4px);
+    background: rgba(57,255,20,0.07);
+    border-color: var(--green);
+    box-shadow:
+        0 0 24px rgba(57,255,20,0.35),
+        0 8px 32px rgba(57,255,20,0.1);
+}
+
+/* circuit grid decoration */
+.card-bg-circuit {
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    opacity: 0.1;
+    background-image:
+        linear-gradient(currentColor 1px, transparent 1px),
+        linear-gradient(90deg, currentColor 1px, transparent 1px);
+    background-size: 12px 12px;
+    clip-path: polygon(100% 0, 100% 100%, 0 0);
+    transition: opacity 0.25s;
+    pointer-events: none;
+}
+.card:hover .card-bg-circuit { opacity: 0.28; }
+
+.card-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+}
+.card-icon svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+.card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.card-platform {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    opacity: 0.6;
+}
+.card-handle {
+    font-size: 0.95rem;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 6px currentColor;
+}
+
+.card-arrow {
+    font-size: 1.3rem;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.25s, transform 0.25s;
+}
+.card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ── Footer ── */
+.footer {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: rgba(0,255,255,0.3);
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0,255,255,0.08);
+    width: 100%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    .container { padding: 40px 16px 32px; gap: 32px; }
+    .avatar-wrapper, .avatar { width: 120px; height: 120px; }
+    .motto-box { padding: 18px 20px; }
+    .cards-grid { grid-template-columns: 1fr; }
 }
